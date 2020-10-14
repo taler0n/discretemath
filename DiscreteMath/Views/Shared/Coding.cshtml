@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-md-3">
+        <div class="list-group">
+            <button class="list-group-item">
+                @Html.ActionLink("1. Проверка однозначности кода", "Index", "CheckCodeUnambiguity")
+            </button>
+            <button class="list-group-item">
+                @Html.ActionLink("2. Проверка существования однозначного кода", "Index", "CheckUnambiguousCodeExistance")
+            </button>
+            <button class="list-group-item">
+                @Html.ActionLink("3. Построение оптимального кода", "Index", "BuildOptimalCode")
+            </button>
+            <button class="list-group-item">
+                @Html.ActionLink("4. Проверка оптимальности кода", "Index", "CheckCodeOptimality")
+            </button>
+            <button class="list-group-item">
+                @Html.ActionLink("5. Характеристики помехоустойчивого кода", "Index", "GetCorrectingCodeParameters")
+            </button>
+            <button class="list-group-item">
+                @Html.ActionLink("6. Кодирование по Хэммингу", "Index", "EncodeHamming")
+            </button>
+        </div>
+    </div>
+    <div class="col-md-9">
+        @RenderBody()
+    </div>
+</div>
+

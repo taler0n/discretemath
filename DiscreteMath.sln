@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscreteMath", "DiscreteMath\DiscreteMath.csproj", "{21385927-FD4A-4688-A51F-2FBFC44C1EBC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{21385927-FD4A-4688-A51F-2FBFC44C1EBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21385927-FD4A-4688-A51F-2FBFC44C1EBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21385927-FD4A-4688-A51F-2FBFC44C1EBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21385927-FD4A-4688-A51F-2FBFC44C1EBC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {42CFD42F-0198-4DCD-99CD-B70EF2E61956}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Coding.cshtml";
+}
+
+<h2>Проверка однозначности кода</h2>
+
+<p>
+    Формат ввода: файл с расширением .txt, где первая строка - кодирующий алфавит без пробелов и повторяющихся символов. 
+    Каждая последующая строка - пара символ - элементарный код, записанные через пробел. Обратите внимание, что эементарные коды 
+    могут состоять только из символов алфавита.
+</p>
+
+@using (Html.BeginForm("Upload", "CheckCodeUnambiguity", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="upload" />
+    <br>
+    <input type="submit" value="Загрузить" />
+}
+<br />
+<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
+
+<p class="col-md-6">@ViewBag.Answer</p>

@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Coding.cshtml";
+}
+
+<h2>Нахождение характеристик помехоустойчивого кода</h2>
+
+<p>
+    Формат ввода: файл с расширением .txt, где каждая  строка - пара символ - элементарный код, записанные через пробел.
+</p>
+
+@using (Html.BeginForm("Upload", "GetCorrectingCodeParameters", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="upload" />
+    <br>
+    <input type="submit" value="Загрузить" />
+}
+<br />
+<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
+
+<p class="col-md-6">@ViewBag.Answer</p>
+

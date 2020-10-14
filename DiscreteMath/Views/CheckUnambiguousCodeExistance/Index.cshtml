@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Coding.cshtml";
+}
+
+<h2>Проверка существования однозначного кода</h2>
+
+<p>
+    Формат ввода: файл с расширением .txt, где первая строка - длина кодирующего алфавита (целое число). Следующая строка - набор длин элементарных кодов, записанные через пробел.
+</p>
+
+@using (Html.BeginForm("Upload", "CheckUnambiguousCodeExistance", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="upload" />
+    <br>
+    <input type="submit" value="Загрузить" />
+}
+<br />
+<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
+
+<p class="col-md-6">@ViewBag.Answer</p>

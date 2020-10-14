@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Coding.cshtml";
+}
+
+<h2>Кодирование сообщения по Хэммингу</h2>
+
+<p>
+    Формат ввода: сообщение состоящее только из 0 и 1. После кодирования возможно внести ошибку для проверки работы алгоритма исправления.
+</p>
+
+<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
+<br />
+@using (Html.BeginForm("Encode", "EncodeHamming", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input class="col-md-6" type="text" name="message" placeholder="Исходное сообщение" value="@ViewBag.Original" />
+    <input type="submit" value="Кодировать" />
+}
+<br />
+@using (Html.BeginForm("Decode", "EncodeHamming", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input class="col-md-6" type="text" name="code" placeholder="Закодированное сообщение" value="@ViewBag.Encoded" />
+    <input type="submit" value="Декодировать" />
+}
+<br />
+<div class="well col-md-6">@ViewBag.Decoded</div>
