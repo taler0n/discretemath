@@ -50,7 +50,10 @@ namespace DiscreteMath.Models
                 }
                 marks[startNode.NodeContent] = 2;
                 Stack<GraphNode> deepSearchStack = new Stack<GraphNode>();
-                deepSearchStack.Push(startNode);
+                foreach (var neighbor in startNode.Connections)
+                {
+                    deepSearchStack.Push(neighbor);
+                }
 
                 while (deepSearchStack.Count > 0)
                 {

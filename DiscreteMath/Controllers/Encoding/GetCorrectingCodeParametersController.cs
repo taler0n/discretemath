@@ -43,6 +43,7 @@ namespace DiscreteMath.Controllers.Encoding
                                 if (blockSize == -1)
                                 {
                                     blockSize = codeword.Length;
+                                    codewords.Add(symbol, codeword);
                                 }
                                 else if (codeword.Length != blockSize)
                                 {

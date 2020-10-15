@@ -45,10 +45,34 @@ namespace DiscreteMath.Models.EncodingAlgorithms
             graph.AddNode(startNode);
             foreach (var codeword in code.ElementaryCodes.Values)
             {
-                for (int i = 1; i < codeword.Length; i++)
+                for (int i = 0; i < codeword.Length; i++)
                 {
                     string prefix = codeword.Substring(0, i);
-                    List<string> postfixes = GetPostfixes(codeword.Substring(i), code);
+                    string tail = codeword.Substring(i);
+                    List<string> postfixes = new List<string>();
+                    Queue<string> tails = new Queue<string>();
+                    tails.Enqueue(tail);
+                    while (tails.Count > 0)
+                    {
+                        string currentTail = tails.Dequeue();
+                        foreach (var middleWord in code.ElementaryCodes.Values)
+                        {
+                            if (middleWord.Length <= currentTail.Length && codeword != middleWord 
+                                && currentTail.Substring(0, middleWord.Length) == middleWord)
+                            {
+                                string newTail = currentTail.Substring(middleWord.Length);
+                                tails.Enqueue(newTail);
+                                postfixes.Add(newTail);
+                            }
+                        }
+                        
+                    }
+
+                    if (postfixes.Count == 0)
+                    {
+                        continue;
+                    }
+
                     GraphNode prefixNode = graph.GetNode(prefix);
                     if (prefixNode == null)
                     {
@@ -57,35 +81,20 @@ namespace DiscreteMath.Models.EncodingAlgorithms
                     }
                     foreach (var postfix in postfixes)
                     {
-                        GraphNode postfixNode = graph.GetNode(postfix);
-                        if (postfixNode == null)
+                        if (postfix != codeword)
                         {
-                            postfixNode = new GraphNode(prefix);
-                            graph.AddNode(postfixNode);
+                            GraphNode postfixNode = graph.GetNode(postfix);
+                            if (postfixNode == null)
+                            {
+                                postfixNode = new GraphNode(postfix);
+                                graph.AddNode(postfixNode);
+                            }
+                            prefixNode.Connections.Add(postfixNode);
                         }
-                        prefixNode.Connections.Add(postfixNode);
                     }
                 }
             }
-            return graph.CycleWithNodeExists(startNode);
-        }
-
-        private static List<string> GetPostfixes(string tail, Code code)
-        {
-            List<string> postfixes = new List<string>();
-            foreach (var codeword in code.ElementaryCodes.Values)
-            {
-                if (codeword.Length <= tail.Length && tail.Substring(codeword.Length) == codeword)
-                {
-                    List<string> newPostfixes = GetPostfixes(tail.Substring(codeword.Length), code);
-                    postfixes.AddRange(newPostfixes);
-                }
-            }
-            if (postfixes.Count == 0)
-            {
-                postfixes.Add(tail);
-            }
-            return postfixes;
+            return !graph.CycleWithNodeExists(startNode);
         }
     }
 }
