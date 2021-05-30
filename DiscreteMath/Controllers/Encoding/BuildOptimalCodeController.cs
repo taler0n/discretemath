@@ -6,17 +6,46 @@ using System.Web.Mvc;
 using System.IO;
 using DiscreteMath.Models;
 using DiscreteMath.Models.EncodingAlgorithms;
+using System.Linq;
+using System.Text.Json;
+using DiscreteMath.Models.EncodingData;
 
 namespace DiscreteMath.Controllers.Encoding
 {
     public class BuildOptimalCodeController : Controller
     {
-        // GET: BuildOptimalCode
+        ExerciseContext db = new ExerciseContext();
+
+        // GET: CheckUnambiousCodeExistance
         public ActionResult Index()
         {
-            return View();
+            var exerciseList = db.Exercises.Where(e => e.Type == (int)ExerciseTypes.BuildOptimalCode).ToList();
+            var rng = new Random(DateTime.Now.Millisecond);
+            var exercise = exerciseList[rng.Next(exerciseList.Count)];
+            var data = JsonSerializer.Deserialize<BuildOptimalCodeData>(exercise.ParametersJson);
+            return View(new BuildOptimalCodeModel(data));
         }
 
+        [HttpPost]
+        public ActionResult Answer(BuildOptimalCodeModel model)
+        {
+            var suggestedCode = new FrequencyCode(model.ElementaryCodes, model.InputData.FrequencyList);
+            var optimalCode = OptimalCodeBuilder.GetOptimalCode(model.InputData.CodeAlphabet, model.InputData.FrequencyList);
+            double suggestedOptimality = suggestedCode.GetCodeOptimality();
+            double optimality = optimalCode.GetCodeOptimality();
+            string checkMessage = String.Format("Верно. Введенный код является кодом с минимальной избыточностью. " +
+                "Средняя длина элементарного кода - {0:0.0000}.", optimality);
+            if (suggestedOptimality - optimality > 0.000001)
+            {
+                checkMessage = String.Format("Неверно. Введенный код не является кодом с минимальной избыточностью. " +
+                    "Средняя длина элементарного кода - {0:0.0000}. Минимальная средняя длина - {1:0.0000}.",
+                    suggestedOptimality, optimality);
+            }
+            model.Comment = checkMessage;
+            return View(model);
+        }
+
+        //старый метод, будет удален
         [HttpPost]
         public string Build(List<string> symbols, List<string> frequencies)
         {

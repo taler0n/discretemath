@@ -1,5 +1,5 @@
 ﻿@using DiscreteMath.Models
-@model FrequencyCode
+@model BuildOptimalCodeModel
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/Coding.cshtml";
@@ -10,54 +10,49 @@
 <h2>Построение оптимального кода</h2>
 
 <p>
-    Формат ввода: файл с расширением .txt, где первая строка - кодирующий алфавит без пробелов и повторяющихся символов. 
-    Каждая последующая строка - пара символ - вероятность, записанные через пробел. Обратите внимание, что сумма всех вероятностей 
-    должна быть равна 1.
+    С помощью процедуры Хаффмена построить код с минимальной избыточностью в алфавите "@Model.InputData.CodeAlphabet"
+    для следующего набора вероятностей:
 </p>
 
-@using (Html.BeginForm("Upload", "BuildOptimalCode", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Answer", "BuildOptimalCode", FormMethod.Post))
 {
-    <input type="file" name="upload" />
-    <br>
-    <input type="submit" value="Загрузить" />
-}
-<br/>
-<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
-
-@if (Model != null)
-{
-<div class="col-md-6">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayName("Символ")
-                </th>
-                <th>
-                    @Html.DisplayName("Вероятность")
-                </th>
-                <th>
-                    @Html.DisplayName("Код")
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var symbol in Model.ElementaryCodes.Keys)
-            {
+    <div class="col-md-6">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => symbol)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => Model.CodeFrequencies[symbol])
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => Model.ElementaryCodes[symbol])
-                    </td>
+                    <th>
+                        @Html.DisplayName("Символ")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Вероятность")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Код")
+                    </th>
                 </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @foreach (var symbol in Model.InputData.FrequencyList.Keys)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => symbol)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.InputData.FrequencyList[symbol])
+                        </td>
+                        <td contenteditable="true" style="background-color:lightyellow">
+                            @Html.DisplayFor(modelItem => Model.ElementaryCodes[symbol])
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <input type="submit" value="Ответить" />
 }
+<br>
+<div class="well col-md-6">@Model.Comment</div>
+
 

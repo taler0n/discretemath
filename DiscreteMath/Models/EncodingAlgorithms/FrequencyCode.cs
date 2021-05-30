@@ -6,7 +6,7 @@ namespace DiscreteMath.Models
 {
     public class FrequencyCode : Code
     {
-        public Dictionary<char, double> CodeFrequencies { get; private set; }
+        public Dictionary<char, double> CodeFrequencies { get; set; }
 
         public FrequencyCode() : base()
         {

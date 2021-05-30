@@ -4,17 +4,49 @@ using System.Web;
 using System.Web.Mvc;
 using System.IO;
 using DiscreteMath.Models.EncodingAlgorithms;
+using DiscreteMath.Models;
+using System.Linq;
+using DiscreteMath.Models.EncodingData;
+using System.Text.Json;
 
 namespace DiscreteMath.Controllers.Encoding
 {
     public class CheckUnambiguousCodeExistanceController : Controller
     {
+        ExerciseContext db = new ExerciseContext();
+
         // GET: CheckUnambiousCodeExistance
         public ActionResult Index()
         {
-            return View();
+            var exerciseList = db.Exercises.Where(e => e.Type == (int)ExerciseTypes.CheckUnambiguousCodeExistance).ToList();
+            var rng = new Random(DateTime.Now.Millisecond);
+            var exercise = exerciseList[rng.Next(exerciseList.Count)];
+            var data = JsonSerializer.Deserialize<CheckUnambiguousCodeExistanceData>(exercise.ParametersJson);
+            return View(new CheckUnambiguousCodeExistanceModel(data));
         }
 
+        [HttpPost]
+        public ActionResult Answer(CheckUnambiguousCodeExistanceModel model)
+        {
+            int correctAnswer = 0;
+            string comment = String.Format("Данный набор чисел может быть набором длин кодовых слов однозначно декодируемого кода " +
+                "в алфавите длиной {0}, так как он удовлетворяет неравенству Макмиллана.", model.InputData.AlphabetLength);
+            if (!CodeUnambiguityChecker.CheckMcmillanInequality(model.InputData.CodewordLengths, model.InputData.AlphabetLength))
+            {
+                correctAnswer = 1;
+                comment = String.Format("Данный набор чисел не может быть набором длин кодовых слов однозначно декодируемого кода " +
+                "в алфавите длиной {0}, так как он не удовлетворяет неравенству Макмиллана.", model.InputData.AlphabetLength);
+            }
+            string checkMessage = "Верно. ";
+            if (model.SelectedAnswer != correctAnswer)
+            {
+                checkMessage = "Неверно. ";
+            }
+            model.Comment = checkMessage + comment;
+            return View(model);
+        }
+
+        //старый метод, будет удален
         [HttpPost]
         public ActionResult Upload(HttpPostedFileBase upload)
         {

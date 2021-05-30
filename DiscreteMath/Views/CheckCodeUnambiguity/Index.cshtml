@@ -1,4 +1,6 @@
-﻿
+﻿@using DiscreteMath.Models
+@model CheckCodeUnambiguityModel
+
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/Coding.cshtml";
@@ -7,18 +9,48 @@
 <h2>Проверка однозначности кода</h2>
 
 <p>
-    Формат ввода: файл с расширением .txt, где первая строка - кодирующий алфавит без пробелов и повторяющихся символов. 
-    Каждая последующая строка - пара символ - элементарный код, записанные через пробел. Обратите внимание, что эементарные коды 
-    могут состоять только из символов алфавита.
+    Выяснить, является ли код с кодирующим алфавитом "@Model.InputData.CodeAlphabet" однозначно декодируемым:
 </p>
 
-@using (Html.BeginForm("Upload", "CheckCodeUnambiguity", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    <input type="file" name="upload" />
-    <br>
-    <input type="submit" value="Загрузить" />
-}
-<br />
-<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
+<div class="col-md-6">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayName("Символ")
+                </th>
+                <th>
+                    @Html.DisplayName("Код")
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var symbol in Model.InputData.Code.ElementaryCodes.Keys)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => symbol)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.InputData.Code.ElementaryCodes[symbol])
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>   
 
-<p class="col-md-6">@ViewBag.Answer</p>
+<br>
+@using (Html.BeginForm("Answer", "CheckCodeUnambiguity", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.InputData)
+    foreach (var answer in DiscreteMath.Models.ExerciseModel.YesNoAnswers)
+    {
+        <div> @Html.RadioButtonFor(modelSelected => modelSelected.SelectedAnswer, answer.Id) @answer.Text</div>
+    }
+    <br>
+    <input type="submit" value="Ответить" />
+}
+
+<br>
+<div class="well col-md-6">@Model.Comment</div>

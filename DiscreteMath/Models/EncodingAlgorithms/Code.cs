@@ -6,7 +6,7 @@ namespace DiscreteMath.Models
 {
     public class Code
     {
-        public Dictionary<char, string> ElementaryCodes { get; private set; }
+        public Dictionary<char, string> ElementaryCodes { get; set; }
 
         public Code() 
         {

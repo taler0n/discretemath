@@ -1,5 +1,5 @@
 ﻿@using DiscreteMath.Models
-@model FrequencyCode
+@model CheckCodeOptimalityModel
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/Coding.cshtml";
@@ -8,56 +8,55 @@
 <h2>Проверка оптимальности кода</h2>
 
 <p>
-    Формат ввода: файл с расширением .txt, где первая строка - кодирующий алфавит без пробелов и повторяющихся символов. 
-    Каждая последующая строка - тройка символ - вероятность - элементарный код, записанные через пробел. Обратите внимание, что 
-    сумма всех вероятностей должна быть равна 1, и что все элементарные коды должны состоять только из символов алфавита.
+    Выяснить, является ли заданный код в алфавите "@Model.InputData.CodeAlphabet" оптимальным:
 </p>
 
-@using (Html.BeginForm("Upload", "CheckCodeOptimality", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    <input type="file" name="upload" />
-    <br>
-    <input type="submit" value="Загрузить" />
-}
-<br />
-<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
-
-<p class="col-md-6">@ViewBag.Answer</p>
-
-@if (Model != null)
-{
-    <div class="col-md-6">
-        <table class="table">
-            <thead>
+<div class="col-md-6">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayName("Символ")
+                </th>
+                <th>
+                    @Html.DisplayName("Вероятность")
+                </th>
+                <th>
+                    @Html.DisplayName("Код")
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var symbol in Model.InputData.Code.ElementaryCodes.Keys)
+            {
                 <tr>
-                    <th>
-                        @Html.DisplayName("Символ")
-                    </th>
-                    <th>
-                        @Html.DisplayName("Вероятность")
-                    </th>
-                    <th>
-                        @Html.DisplayName("Код")
-                    </th>
+                    <td>
+                        @Html.DisplayFor(modelItem => symbol)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.InputData.Code.CodeFrequencies[symbol])
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.InputData.Code.ElementaryCodes[symbol])
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var symbol in Model.ElementaryCodes.Keys)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => symbol)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => Model.CodeFrequencies[symbol])
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => Model.ElementaryCodes[symbol])
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+            }
+        </tbody>
+    </table>
+</div>
+
+<br>
+@using (Html.BeginForm("Answer", "CheckCodeOptimality", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.InputData)
+    foreach (var answer in DiscreteMath.Models.ExerciseModel.YesNoAnswers)
+    {
+        <div> @Html.RadioButtonFor(modelSelected => modelSelected.SelectedAnswer, answer.Id) @answer.Text</div>
+    }
+    <br>
+    <input type="submit" value="Ответить" />
 }
+
+<br>
+<div class="well col-md-6">@Model.Comment</div>
 

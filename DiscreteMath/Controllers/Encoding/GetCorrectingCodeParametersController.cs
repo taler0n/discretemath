@@ -4,17 +4,61 @@ using System.Web;
 using System.Web.Mvc;
 using System.IO;
 using DiscreteMath.Models;
+using DiscreteMath.Models.EncodingData;
+using System.Linq;
+using System.Text.Json;
+using System.Text;
 
 namespace DiscreteMath.Controllers.Encoding
 {
     public class GetCorrectingCodeParametersController : Controller
     {
-        // GET: GetCorrectingCodeParameters
+        ExerciseContext db = new ExerciseContext();
+
+        // GET: CheckUnambiousCodeExistance
         public ActionResult Index()
         {
-            return View();
+            var exerciseList = db.Exercises.Where(e => e.Type == (int)ExerciseTypes.GetCorrectingCodeParameters).ToList();
+            var rng = new Random(DateTime.Now.Millisecond);
+            var exercise = exerciseList[rng.Next(exerciseList.Count)];
+            var data = JsonSerializer.Deserialize<GetCorrectingCodeParametersData>(exercise.ParametersJson);
+            return View(new GetCorrectingCodeParametersModel(data));
         }
 
+        [HttpPost]
+        public ActionResult Answer(GetCorrectingCodeParametersModel model)
+        {
+            var blockCode = new BlockCode(model.InputData.Code.ElementaryCodes, model.InputData.Code.ElementaryCodes.Values.ElementAt(0).Length);
+            bool foundMistake = false;
+            string checkMessage = "Верно. ";
+            var commentBuilder = new StringBuilder();
+            int codeDistance = blockCode.GetCodeDistance();
+            if (model.CodeDistance != codeDistance)
+            {
+                foundMistake = true;
+                commentBuilder.Append(String.Format("Кодовое расстояние - {0}. ", codeDistance));
+            }
+            int detectableErrors = blockCode.GetDetectableErrors(codeDistance);
+            if (model.DetectableErrors != detectableErrors)
+            {
+                foundMistake = true;
+                commentBuilder.Append(String.Format("Количество обнаруживаемых ошибок - {0}. ", detectableErrors));
+            }
+            int fixableErrors = blockCode.GetFixableErrors(codeDistance);
+            if (model.FixableErrors != fixableErrors)
+            {
+                foundMistake = true;
+                commentBuilder.Append(String.Format("Количество исправляемых ошибок - {0}. ", fixableErrors));
+            }
+            if (foundMistake)
+            {
+                checkMessage = "Неверно. ";
+            }
+            model.Comment = checkMessage + commentBuilder.ToString();
+            return View(model);
+        }
+
+        //старый метод, будет удален
         [HttpPost]
         public ActionResult Upload(HttpPostedFileBase upload)
         {

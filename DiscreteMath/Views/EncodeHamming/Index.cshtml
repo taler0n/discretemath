@@ -1,4 +1,5 @@
-﻿
+﻿@using DiscreteMath.Models
+@model EncodeHammingModel
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/Coding.cshtml";
@@ -7,21 +8,17 @@
 <h2>Кодирование сообщения по Хэммингу</h2>
 
 <p>
-    Формат ввода: сообщение состоящее только из 0 и 1. После кодирования возможно внести ошибку для проверки работы алгоритма исправления.
+    Построить по методу Хэмминга кодовое слово для сообщения: @Model.InputData.Message
 </p>
 
-<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
-<br />
-@using (Html.BeginForm("Encode", "EncodeHamming", FormMethod.Post, new { enctype = "multipart/form-data" }))
+<br>
+@using (Html.BeginForm("Answer", "EncodeHamming", FormMethod.Post))
 {
-    <input class="col-md-6" type="text" name="message" placeholder="Исходное сообщение" value="@ViewBag.Original" />
-    <input type="submit" value="Кодировать" />
+    @Html.HiddenFor(model => model.InputData)
+    @Html.Label("Кодовое слово: ")
+    @Html.EditorFor(model => model.EncodedMessage)
+    <br>
+    <input type="submit" value="Ответить" />
 }
-<br />
-@using (Html.BeginForm("Decode", "EncodeHamming", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    <input class="col-md-6" type="text" name="code" placeholder="Закодированное сообщение" value="@ViewBag.Encoded" />
-    <input type="submit" value="Декодировать" />
-}
-<br />
-<div class="well col-md-6">@ViewBag.Decoded</div>
+<br>
+<div class="well col-md-6">@Model.Comment</div>

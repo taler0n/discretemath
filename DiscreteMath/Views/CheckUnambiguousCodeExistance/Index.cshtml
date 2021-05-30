@@ -1,4 +1,5 @@
-﻿
+﻿@using DiscreteMath.Models
+@model CheckUnambiguousCodeExistanceModel
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/Coding.cshtml";
@@ -7,16 +8,24 @@
 <h2>Проверка существования однозначного кода</h2>
 
 <p>
-    Формат ввода: файл с расширением .txt, где первая строка - длина кодирующего алфавита (целое число). Следующая строка - набор длин элементарных кодов, записанные через пробел.
+    С помощью неравенства Макмиллана выяснить, может ли набор чисел (
+    @foreach (var num in Model.InputData.CodewordLengths)
+    {
+        @Html.DisplayText(String.Format("{0}, ", num))
+    }
+    ) быть набором длин кодовых слов однозначно декодируемого кода в алфавите длины @Model.InputData.AlphabetLength:
 </p>
-
-@using (Html.BeginForm("Upload", "CheckUnambiguousCodeExistance", FormMethod.Post, new { enctype = "multipart/form-data" }))
+<br>
+@using (Html.BeginForm("Answer", "CheckUnambiguousCodeExistance", FormMethod.Post))
 {
-    <input type="file" name="upload" />
+    @Html.HiddenFor(model => model.InputData)
+    foreach (var answer in DiscreteMath.Models.ExerciseModel.YesNoAnswers)
+    {
+        <div> @Html.RadioButtonFor(modelSelected => modelSelected.SelectedAnswer, answer.Id) @answer.Text</div>
+    }
     <br>
-    <input type="submit" value="Загрузить" />
+    <input type="submit" value="Ответить" />
 }
-<br />
-<div class="alert alert-danger col-md-6">@ViewBag.ErrorMessage</div>
 
-<p class="col-md-6">@ViewBag.Answer</p>
+<br>
+<div class="well col-md-6">@Model.Comment</div>

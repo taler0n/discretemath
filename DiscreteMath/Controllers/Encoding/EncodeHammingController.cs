@@ -1,20 +1,43 @@
-﻿using DiscreteMath.Models.EncodingAlgorithms;
+﻿using DiscreteMath.Models;
+using DiscreteMath.Models.EncodingAlgorithms;
+using DiscreteMath.Models.EncodingData;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text.Json;
 using System.Web.Mvc;
 
 namespace DiscreteMath.Controllers.Encoding
 {
     public class EncodeHammingController : Controller
     {
-        // GET: EncodeHamming
+        ExerciseContext db = new ExerciseContext();
+
+        // GET: CheckUnambiousCodeExistance
         public ActionResult Index()
         {
-            return View();
+            var exerciseList = db.Exercises.Where(e => e.Type == (int)ExerciseTypes.EncodeHamming).ToList();
+            var rng = new Random(DateTime.Now.Millisecond);
+            var exercise = exerciseList[rng.Next(exerciseList.Count)];
+            var data = JsonSerializer.Deserialize<EncodeHammingData>(exercise.ParametersJson);
+            return View(new EncodeHammingModel(data));
         }
 
+        [HttpPost]
+        public ActionResult Answer(EncodeHammingModel model)
+        {
+            string encoded = HammingEncoder.Encode(model.InputData.Message);
+            string checkMessage = "Верно. ";
+            string comment = "";
+            if (model.EncodedMessage != encoded)
+            {
+                checkMessage = "Неверно. ";
+                comment = String.Format("Правильный код - {0}. ", encoded);
+            }
+            model.Comment = checkMessage + comment;
+            return View(model);
+        }
+
+        //старый метод, будет удален
         [HttpPost]
         public ActionResult Encode(string message)
         {

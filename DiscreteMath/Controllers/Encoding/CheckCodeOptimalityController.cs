@@ -5,17 +5,52 @@ using System.Web.Mvc;
 using System.IO;
 using DiscreteMath.Models;
 using DiscreteMath.Models.EncodingAlgorithms;
+using System.Linq;
+using DiscreteMath.Models.EncodingData;
+using System.Text.Json;
 
 namespace DiscreteMath.Controllers.Encoding
 {
     public class CheckCodeOptimalityController : Controller
     {
-        // GET: CheckCodeOptimality
+        ExerciseContext db = new ExerciseContext();
+
+        // GET: CheckUnambiousCodeExistance
         public ActionResult Index()
         {
-            return View();
+            var exerciseList = db.Exercises.Where(e => e.Type == (int)ExerciseTypes.CheckCodeOptimality).ToList();
+            var rng = new Random(DateTime.Now.Millisecond);
+            var exercise = exerciseList[rng.Next(exerciseList.Count)];
+            var data = JsonSerializer.Deserialize<CheckCodeOptimalityData>(exercise.ParametersJson);
+            return View(new CheckCodeOptimalityModel(data));
         }
 
+        [HttpPost]
+        public ActionResult Answer(CheckCodeOptimalityModel model)
+        {
+            var optimalCode = OptimalCodeBuilder.GetOptimalCode(model.InputData.CodeAlphabet, model.InputData.Code.CodeFrequencies);
+            double suggestedOptimality = model.InputData.Code.GetCodeOptimality();
+            double optimality = optimalCode.GetCodeOptimality();
+            int correctAnswer = 0;
+            string comment = String.Format("Введенный код является кодом с минимальной избыточностью. " +
+                "Средняя длина элементарного кода - {0:0.0000}.", optimality);
+            if (suggestedOptimality - optimality > 0.000001)
+            {
+                correctAnswer = 1;
+                comment = String.Format("Введенный код не является кодом с минимальной избыточностью. " +
+                    "Средняя длина элементарного кода - {0:0.0000}. Минимальная средняя длина - {1:0.0000}. Ею обладает следующий код:", 
+                    suggestedOptimality, optimality);
+            }
+            string checkMessage = "Верно. ";
+            if (model.SelectedAnswer != correctAnswer)
+            {
+                checkMessage = "Неверно. ";
+            }
+            model.Comment = checkMessage + comment;
+            return View(model);
+        }
+
+        //старый метод, будет удален
         [HttpPost]
         public ActionResult Upload(HttpPostedFileBase upload)
         {
